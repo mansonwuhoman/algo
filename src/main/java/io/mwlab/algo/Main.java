@@ -10,10 +10,13 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
@@ -55,16 +58,16 @@ public class Main {
         Vertex              start,
         Vertex              end
     ){
-        var resultList = new ArrayList<List<Vertex>>();
+        var resultList = new HashSet<List<Vertex>>();
         allPossiblePaths(vertexes, edges, start, end, resultList);
-        return resultList.stream().distinct().toList();
+        return resultList.stream().toList();
     }
     private static void allPossiblePaths(
         Collection<Vertex>  vertexes,
         Collection<Edge>    edges,
         Vertex              start,
         Vertex              end,
-        List<List<Vertex>>  resultList
+        Set<List<Vertex>>  resultList
     ){
         var graph = new DefaultUndirectedGraph<Vertex, DefaultEdge>(DefaultEdge.class);
         vertexes.forEach(graph::addVertex);
@@ -93,7 +96,7 @@ public class Main {
     private static void printLeastNumberOfHops(List<List<Vertex>> resultList){
         var shortestPath = resultList.stream().min(comparingInt(List::size)).orElse(emptyList());
         var shortestPathStr = shortestPath.stream().map(Vertex::name).collect(joining(","));
-        System.out.printf("The shortest path: '%s', the number of hops '%d'.\n", shortestPathStr, shortestPath.size());
+        System.out.printf("The shortest path: '%s', the number of hops '%d'.\n", shortestPathStr, shortestPath.size()-1);
     }
 
 
@@ -116,6 +119,7 @@ public class Main {
     private static void printAllPossiblePaths(List<List<Vertex>>  resultList){
         resultList.stream()
             .map(vertexList -> vertexList.stream().map(Vertex::name).collect(joining(",")))
+            .sorted(reverseOrder())
             .forEach(System.out::println);
     }
 }
